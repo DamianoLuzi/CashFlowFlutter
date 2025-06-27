@@ -11,7 +11,7 @@ class SupabaseStorageService {
   Future<String?> uploadFileToSupabase(XFile file) async {
     try {
       // For web, you might get bytes directly. For mobile, read from path.
-      final Uint8List? fileBytes = await file.readAsBytes();
+      final Uint8List fileBytes = await file.readAsBytes();
       if (fileBytes == null) {
         print("Failed to read file bytes.");
         return null;

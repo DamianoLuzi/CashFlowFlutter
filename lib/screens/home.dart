@@ -89,9 +89,9 @@ class _HomeScreenState extends State<HomeScreen> {
             _selectedIndex = index;
           });
         },
-        children: _widgetOptions,
         // Disable swiping if you only want tab navigation via bottom bar
-        physics: const NeverScrollableScrollPhysics(), // Disables horizontal swipe
+        physics: const NeverScrollableScrollPhysics(),
+        children: _widgetOptions, // Disables horizontal swipe
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: BottomNavItem.values.map((item) {
