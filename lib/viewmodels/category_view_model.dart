@@ -1,0 +1,85 @@
+import 'package:flutter/foundation.dart' as foundation;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutterapp/models/category.dart';
+
+class CategoryViewModel extends foundation.ChangeNotifier {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  List<Category> _categories = [];
+  List<Category> get categories => _categories;
+
+  // Define default categories
+  final List<Category> defaultCategories = [
+    Category(name: "Food", icon: "🍔"),
+    Category(name: "Transport", icon: "🚌"),
+    Category(name: "Housing", icon: "🏠"),
+    Category(name: "Entertainment", icon: "🎉"),
+    Category(name: "Shopping", icon: "🛍️"),
+    Category(name: "Health", icon: "🏥"),
+    Category(name: "Salary", icon: "💰"),
+    Category(name: "Investments", icon: "📈"),
+  ];
+
+  CategoryViewModel() {
+    _auth.authStateChanges().listen((user) {
+      if (user != null) {
+        _listenToCustomCategories();
+      } else {
+        _categories = [];
+        notifyListeners();
+      }
+    });
+  }
+
+  void _listenToCustomCategories() {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) {
+      _categories = [];
+      notifyListeners();
+      return;
+    }
+    _db
+        .collection("users")
+        .doc(userId)
+        .collection("customCategories")
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => Category.fromMap(doc.data())).toList())
+        .listen((customCategories) {
+          _categories = customCategories;
+          notifyListeners();
+        });
+  }
+
+  List<Category> getAllCategoriesForDisplay() {
+    final combinedList = <Category>[];
+
+    // Add default categories first
+    combinedList.addAll(defaultCategories);
+
+    // Add custom categories, preferring custom ones if names overlap
+    for (var customCat in _categories) {
+      final existingIndex = combinedList.indexWhere((cat) => cat.name == customCat.name);
+      if (existingIndex != -1) {
+        combinedList[existingIndex] = customCat; // Replace default with custom
+      } else {
+        combinedList.add(customCat);
+      }
+    }
+    combinedList.sort((a, b) => a.name.compareTo(b.name));
+    return combinedList;
+  }
+
+  Future<bool> addCustomCategory(Category category) async {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) return false;
+    try {
+      await _db.collection("users").doc(userId).collection("customCategories").doc(category.name).set(category.toMap());
+      return true;
+    } catch (e) {
+      print("Error adding custom category: $e");
+      return false;
+    }
+  }
+}
