@@ -3,6 +3,7 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    //id("com.google.gms.google-services")
 }
 
 android {
@@ -51,6 +52,9 @@ dependencies {
     implementation ("androidx.window:window-java:1.0.0")
     coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.0.3")
 }
+
+// Apply the Google services plugin the old way in Kotlin DSL:
+apply(plugin = "com.google.gms.google-services")
 
 flutter {
     source = "../.."

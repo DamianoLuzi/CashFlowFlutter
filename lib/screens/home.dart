@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutterapp/screens/auth_service.dart';
+import 'package:flutterapp/screens/add_transaction.dart';
+import 'package:flutterapp/repository/auth_service.dart';
+import 'package:flutterapp/screens/misc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
@@ -33,10 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // We use PageStorageKey to maintain scroll position and state for each page
   // when navigating between tabs.
   static final List<Widget> _widgetOptions = <Widget>[
-   /*  const OverviewScreen(key: PageStorageKey('overviewScreen')),
+    const OverviewScreen(key: PageStorageKey('overviewScreen')),
     const AddTransactionScreen(key: PageStorageKey('addTransactionScreen')),
     const TransactionListScreen(key: PageStorageKey('transactionListScreen')),
-    const ProfileScreen(key: PageStorageKey('profileScreen')), */
+    const ProfileScreen(key: PageStorageKey('profileScreen')),
   ];
 
   // Controller for page view to allow programmatic page changes if needed

@@ -34,6 +34,7 @@ class TransactionViewModel extends ChangeNotifier {
   }
 
   TransactionViewModel() {
+
     _auth.authStateChanges().listen((user) {
       if (user != null) {
         _loadData(user.uid);
@@ -194,4 +195,15 @@ class TransactionViewModel extends ChangeNotifier {
       _checkForOverBudget(currentUserId, budget.category, 0.0); // Pass 0.0 as we are re-evaluating, not adding a new expense
     }
   }
+
+  Future<void> addBudget(Budget budget) async {
+  bool success = await _userRepository.addBudget(budget);
+  if (success) {
+    Fluttertoast.showToast(msg: "Budget added!");
+    // No need to manually refresh, stream listener will update automatically
+  } else {
+    Fluttertoast.showToast(msg: "Failed to add budget.");
+  }
+}
+
 }
