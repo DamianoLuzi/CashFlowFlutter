@@ -19,7 +19,7 @@ android {
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
-  targetCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -36,6 +36,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -50,7 +51,24 @@ android {
 dependencies {
     implementation ("androidx.window:window:1.0.0")
     implementation ("androidx.window:window-java:1.0.0")
-    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.0.3")
+    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.1.4")
+}
+configurations.all {
+    resolutionStrategy {
+        // Force a specific version for a transitive dependency
+        force("com.android.tools:desugar_jdk_libs:2.1.4")
+
+        // Optionally, for more granular control if 'force' doesn't work alone,
+        // you can use 'eachDependency'. However, 'force' is usually sufficient.
+        /*
+        eachDependency {
+            if (requested.group == "com.android.tools" && requested.name == "desugar_jdk_libs") {
+                useVersion("2.1.4")
+                because "flutter_local_notifications requires 2.1.4 or higher"
+            }
+        }
+        */
+    }
 }
 
 // Apply the Google services plugin the old way in Kotlin DSL:
