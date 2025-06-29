@@ -63,9 +63,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     setState(() {
       _isSubmitting = false;
     });
-    if (mounted) {
-      Navigator.pop(context); // Go back after saving
-    }
+/*     if (mounted) {
+      Navigator.pop(context); 
+    } */
   }
 
   @override

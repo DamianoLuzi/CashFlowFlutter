@@ -30,7 +30,7 @@ class UserRepository {
     try {
       await _db.collection("users").doc(userId).set({
         'notificationPreferences': preferences.toMap(),
-      }, SetOptions(merge: true)); // Merge to avoid overwriting other user data
+      }, SetOptions(merge: true)); 
       return true;
     } catch (e) {
       print("Error updating user notification preferences: $e");

@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/models/budget.dart';
 import 'package:flutterapp/models/transaction.dart';
 import 'package:flutterapp/viewmodels/category_view_model.dart';
 import 'package:flutterapp/viewmodels/transaction_view_model.dart';
@@ -6,6 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class TransactionsScreen extends StatefulWidget {
+  const TransactionsScreen({super.key});
+
   @override
   State<TransactionsScreen> createState() => _TransactionsScreenState();
 }
@@ -30,9 +34,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 context.read<TransactionViewModel>().setFilter(val);
               },
               itemBuilder: (_) => [
-                PopupMenuItem(child: Text("All"), value: null),
-                PopupMenuItem(child: Text("Income"), value: TransactionType.INCOME),
-                PopupMenuItem(child: Text("Expense"), value: TransactionType.EXPENSE),
+                PopupMenuItem(value: null, child: Text("All")),
+                PopupMenuItem(value: TransactionType.INCOME, child: Text("Income")),
+                PopupMenuItem(value: TransactionType.EXPENSE, child: Text("Expense")),
               ],
             )
           ],
@@ -57,13 +61,81 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: () => _showAddTransactionDialog(context),
+          onPressed: () => _showAddBudgetDialog(context),
         ),
       ),
     );
   }
 
-  void _showAddTransactionDialog(BuildContext context) {
+  void _showAddBudgetDialog(BuildContext context) {
+  final amountController = TextEditingController();
+  final categoryVM = context.read<CategoryViewModel>();
+  final categories = categoryVM.getAllCategoriesForDisplay();
+
+  showDialog(
+    context: context,
+    builder: (ctx) {
+      String? selectedCategory;
+
+      return StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text("Add Budget"),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<String>(
+                  value: selectedCategory,
+                  items: categories
+                      .map((c) => DropdownMenuItem(
+                            value: c.name,
+                            child: Text("${c.icon} ${c.name}"),
+                          ))
+                      .toList(),
+                  onChanged: (val) => setState(() => selectedCategory = val),
+                  decoration: InputDecoration(labelText: "Category"),
+                ),
+                TextField(
+                  controller: amountController,
+                  decoration: InputDecoration(labelText: "Amount"),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final amount = double.tryParse(amountController.text.trim()) ?? 0.0;
+
+                if (selectedCategory != null && amount > 0) {
+                  final budget = Budget(
+                    userId: FirebaseAuth.instance.currentUser!.uid,
+                    category: selectedCategory!,
+                    amount: amount,
+                  );
+
+                  context.read<TransactionViewModel>().addBudget(budget);
+                  Navigator.pop(ctx);
+                } else {
+                  // Optionally show an error message
+                }
+              },
+              child: Text("Add"),
+            )
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
+  /* void _showAddTransactionDialog(BuildContext context) {
     final _amountController = TextEditingController();
     final _descController = TextEditingController();
     String? selectedCategory;
@@ -121,5 +193,5 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         ],
       ),
     );
-  }
+  } */
 }

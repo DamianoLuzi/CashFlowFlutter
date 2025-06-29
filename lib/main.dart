@@ -6,12 +6,12 @@ import 'package:flutterapp/screens/home.dart';
 import 'package:flutterapp/screens/login.dart';
 import 'package:flutterapp/screens/signup.dart';
 import 'package:flutterapp/viewmodels/category_view_model.dart';
+import 'package:flutterapp/viewmodels/notification_helper.dart';
 import 'package:flutterapp/viewmodels/transaction_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
 
@@ -25,6 +25,8 @@ void main() async {
   );
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // Initialize Firebase
+  tz.initializeTimeZones();
+  await NotificationHelper.initialize();
   //runApp(const MyApp());
   runApp(
     MultiProvider(
@@ -32,7 +34,6 @@ void main() async {
       Provider<AuthService>(create: (_) => AuthService()),
       ChangeNotifierProvider(create: (_) => CategoryViewModel()),
       ChangeNotifierProvider(create: (_) => TransactionViewModel()),
-      // Add other providers/services as needed
     ],
       child: const MyApp(),
     ),

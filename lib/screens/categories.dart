@@ -4,6 +4,8 @@ import 'package:flutterapp/viewmodels/category_view_model.dart';
 import 'package:provider/provider.dart';
 
 class CategoriesScreen extends StatelessWidget {
+  const CategoriesScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -34,8 +36,8 @@ class CategoriesScreen extends StatelessWidget {
   }
 
   void _showAddCategoryDialog(BuildContext context) {
-    final _nameController = TextEditingController();
-    final _iconController = TextEditingController();
+    final nameController = TextEditingController();
+    final iconController = TextEditingController();
 
     showDialog(
       context: context,
@@ -44,8 +46,8 @@ class CategoriesScreen extends StatelessWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: _nameController, decoration: InputDecoration(labelText: "Name")),
-            TextField(controller: _iconController, decoration: InputDecoration(labelText: "Icon (emoji)")),
+            TextField(controller: nameController, decoration: InputDecoration(labelText: "Name")),
+            TextField(controller: iconController, decoration: InputDecoration(labelText: "Icon (emoji)")),
           ],
         ),
         actions: [
@@ -55,8 +57,8 @@ class CategoriesScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              final name = _nameController.text.trim();
-              final icon = _iconController.text.trim();
+              final name = nameController.text.trim();
+              final icon = iconController.text.trim();
               if (name.isNotEmpty && icon.isNotEmpty) {
                 final vm = context.read<CategoryViewModel>();
                 vm.addCustomCategory(Category(name: name, icon: icon));

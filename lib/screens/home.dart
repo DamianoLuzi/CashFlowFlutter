@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterapp/screens/add_transaction.dart';
 import 'package:flutterapp/repository/auth_service.dart';
 import 'package:flutterapp/screens/misc.dart';
+import 'package:flutterapp/screens/transactions.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
@@ -37,7 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
   static final List<Widget> _widgetOptions = <Widget>[
     const OverviewScreen(key: PageStorageKey('overviewScreen')),
     const AddTransactionScreen(key: PageStorageKey('addTransactionScreen')),
-    const TransactionListScreen(key: PageStorageKey('transactionListScreen')),
+    //const TransactionListScreen(key: PageStorageKey('transactionListScreen')),
+    TransactionsScreen(),
     const ProfileScreen(key: PageStorageKey('profileScreen')),
   ];
 

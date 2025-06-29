@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutterapp/repository/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:flutterapp/viewmodels/profile_view_model.dart';
+import 'package:flutterapp/viewmodels/budget_view_model.dart';
 
 class OverviewScreen extends StatelessWidget {
-  const OverviewScreen({Key? key}) : super(key: key);
+  const OverviewScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,69 +18,81 @@ class OverviewScreen extends StatelessWidget {
   }
 }
 
-class TransactionListScreen extends StatelessWidget {
-  const TransactionListScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // Placeholder list of transactions
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: 10, // Replace with your transaction count
-      itemBuilder: (context, index) {
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          child: ListTile(
-            leading: const Icon(Icons.money),
-            title: Text('Transaction #$index'),
-            subtitle: Text('Description here'),
-            trailing: Text('-\$${(index + 1) * 10}'),
-          ),
-        );
-      },
-    );
-  }
-}
-
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Placeholder profile info with logout button
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CircleAvatar(
-            radius: 50,
-            child: Icon(Icons.account_circle, size: 100),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'User Name',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'user@example.com',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: 32),
-          ElevatedButton.icon(
-            onPressed: () {
-              // Call logout from AuthService or show confirmation
-              final authService = Provider.of<AuthService>(context, listen: false);
-              authService.signOut();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Logged out')),
-              );
-            },
-            icon: const Icon(Icons.logout),
-            label: const Text('Logout'),
-          ),
-        ],
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProfileViewModel()),
+        ChangeNotifierProvider(create: (_) => BudgetViewModel()), // For budget list
+      ],
+      child: Consumer2<ProfileViewModel, BudgetViewModel>(
+        builder: (context, profileVM, budgetVM, _) {
+          final budgets = budgetVM.budgets;
+
+          return Scaffold(
+            appBar: AppBar(title: Text("Profile")),
+            body: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: ListView(
+                children: [
+                  const Center(
+                    child: CircleAvatar(
+                      radius: 50,
+                      child: Icon(Icons.account_circle, size: 100),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: Text(profileVM.userName, style: Theme.of(context).textTheme.headlineMedium),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text(profileVM.userEmail, style: Theme.of(context).textTheme.bodyLarge),
+                  ),
+                  const SizedBox(height: 32),
+                  SwitchListTile(
+                    value: profileVM.preferences.overBudgetAlerts,
+                    title: Text("Over-Budget Alerts"),
+                    onChanged: profileVM.toggleOverBudgetAlerts,
+                  ),
+                  SwitchListTile(
+                    value: profileVM.preferences.spendingSummary,
+                    title: Text("Spending Summary Notifications"),
+                    onChanged: (enabled) {
+                      profileVM.toggleSpendingSummary(enabled); // You'll add this method below
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  Text("Your Budgets", style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  if (budgets.isEmpty)
+                    Text("No budgets set", style: TextStyle(color: Colors.grey)),
+                  ...budgets.map((b) => ListTile(
+                        title: Text(b.category),
+                        trailing: Text("€${b.amount.toStringAsFixed(2)}"),
+                      )),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      await profileVM.signOut();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Logged out')),
+                      );
+                    },
+                    icon: const Icon(Icons.logout),
+                    label: const Text('Logout'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
