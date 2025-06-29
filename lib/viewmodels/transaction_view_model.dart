@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Transaction;
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,12 +8,16 @@ import 'package:flutterapp/models/notification_preferences.dart';
 import 'package:flutterapp/models/transaction.dart';
 import 'package:flutterapp/repository/transaction_service.dart';
 import 'package:flutterapp/repository/user_service.dart';
+import 'package:flutterapp/viewmodels/notification_helper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class TransactionViewModel extends ChangeNotifier {
   final TransactionService _transactionService = TransactionService();
   final UserRepository _userRepository = UserRepository();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  StreamSubscription? _transactionsSubscription;
+  StreamSubscription? _budgetsSubscription;
+
 
   List<Transaction> _transactions = [];
   List<Transaction> get transactions => _transactions;
@@ -54,22 +60,28 @@ class TransactionViewModel extends ChangeNotifier {
   }
 
   void _listenToTransactions() {
-    _transactionService.getTransactionsForCurrentUser().listen((transactionsList) {
+    _transactionsSubscription = _transactionService.getTransactionsForCurrentUser().listen((transactionsList) {
       _transactions = transactionsList;
       notifyListeners();
-      // After transactions are loaded/updated, re-check budgets if needed
       _checkAllBudgets();
     });
   }
 
   void _listenToBudgets() {
-    _userRepository.getBudgetsForCurrentUser().listen((budgetsList) {
+    _budgetsSubscription = _userRepository.getBudgetsForCurrentUser().listen((budgetsList) {
       _budgets = budgetsList;
       notifyListeners();
-      // After budgets are loaded/updated, re-check budgets if needed
       _checkAllBudgets();
     });
   }
+
+  @override
+void dispose() {
+  _transactionsSubscription?.cancel();
+  _budgetsSubscription?.cancel();
+  super.dispose();
+}
+
 
   Future<void> _loadUserNotificationPreferences(String userId) async {
     _userNotificationPreferences = await _userRepository.getUserNotificationPreferences(userId) ?? NotificationPreferences();
@@ -150,7 +162,7 @@ class TransactionViewModel extends ChangeNotifier {
     }
   }
 
-  void _checkForOverBudget(String userId, String category, double newExpenseAmount) {
+  void _checkForOverBudget(String userId, String category, double newExpenseAmount) async {
     if (!_userNotificationPreferences.overBudgetAlerts) {
       print("Over budget alerts are disabled by user preferences.");
       return;
@@ -181,7 +193,7 @@ class TransactionViewModel extends ChangeNotifier {
       print("Over budget for '$category' by €$amountOver. Triggering notification.");
       Fluttertoast.showToast(msg: "Over budget in $category by €${amountOver.toStringAsFixed(2)}", toastLength: Toast.LENGTH_LONG);
       // TODO: Integrate local notification package here for persistent notification
-      // NotificationHelper.showOverBudgetNotification(getApplication(), category, amountOver);
+      NotificationHelper.showOverBudgetNotification(/* getApplication(), */ category, amountOver);
     } else {
       print("Still within budget for '$category'.");
     }
