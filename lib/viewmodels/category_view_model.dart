@@ -11,16 +11,16 @@ class CategoryViewModel extends foundation.ChangeNotifier {
   List<Category> get categories => _categories;
 
   // Define default categories
-  final List<Category> defaultCategories = [
-    Category(name: "Food", icon: "🍔"),
-    Category(name: "Transport", icon: "🚌"),
-    Category(name: "Housing", icon: "🏠"),
-    Category(name: "Entertainment", icon: "🎉"),
-    Category(name: "Shopping", icon: "🛍️"),
-    Category(name: "Health", icon: "🏥"),
-    Category(name: "Salary", icon: "💰"),
-    Category(name: "Investments", icon: "📈"),
-  ];
+ final List<Category> defaultCategories = [
+  Category(userId: 'default', name: "Food", icon: "🍔"),
+  Category(userId: 'default', name: "Transport", icon: "🚌"),
+  Category(userId: 'default', name: "Housing", icon: "🏠"),
+  Category(userId: 'default', name: "Entertainment", icon: "🎉"),
+  Category(userId: 'default', name: "Shopping", icon: "🛍️"),
+  Category(userId: 'default', name: "Health", icon: "🏥"),
+  Category(userId: 'default', name: "Salary", icon: "💰"),
+  Category(userId: 'default', name: "Investments", icon: "📈"),
+];
 
   CategoryViewModel() {
     _auth.authStateChanges().listen((user) {
@@ -33,7 +33,7 @@ class CategoryViewModel extends foundation.ChangeNotifier {
     });
   }
 
-  void _listenToCustomCategories() {
+/*   void _listenToCustomCategories() {
     final userId = _auth.currentUser?.uid;
     if (userId == null) {
       _categories = [];
@@ -51,7 +51,27 @@ class CategoryViewModel extends foundation.ChangeNotifier {
           _categories = customCategories;
           notifyListeners();
         });
+  } */
+
+  void _listenToCustomCategories() {
+  final userId = _auth.currentUser?.uid;
+  if (userId == null) {
+    _categories = [];
+    notifyListeners();
+    return;
   }
+  _db
+      .collection("categories")
+      .where("userId", isEqualTo: userId)
+      .snapshots()
+      .map((snapshot) => snapshot.docs
+          .map((doc) => Category.fromFirestore(doc))
+          .toList())
+      .listen((customCategories) {
+        _categories = customCategories;
+        notifyListeners();
+      });
+}
 
   List<Category> getAllCategoriesForDisplay() {
     final combinedList = <Category>[];
@@ -72,16 +92,41 @@ class CategoryViewModel extends foundation.ChangeNotifier {
     return combinedList;
   }
 
-  Future<bool> addCustomCategory(Category category) async {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null) return false;
-    try {
-      //await _db.collection("users").doc(userId).collection("customCategories").doc(category.name).set(category.toMap());
-      await _db.collection("categories").where("userId", isEqualTo: userId);
-      return true;
-    } catch (e) {
-      print("Error adding custom category: $e");
-      return false;
-    }
+ /*  Future<bool> addCustomCategory(name, icon) async {
+  final userId = _auth.currentUser?.uid;
+  if (userId == null) return false;
+  Category(userId: userId, name: name, icon: icon);
+  try {
+    await _db.collection("categories").add({
+      "name": category.name,
+      "icon": category.icon,
+      "userId": userId, // required for filtering
+    });
+    return true;
+  } catch (e) {
+    print("Error adding custom category: $e");
+    return false;
   }
+} */
+
+Future<bool> addCustomCategory(Category category) async {
+  final userId = _auth.currentUser?.uid;
+  if (userId == null) return false;
+
+  try {
+    // ensure the category has userId set
+    final catToAdd = Category(
+      userId: userId,
+      name: category.name,
+      icon: category.icon,
+    );
+
+    DocumentReference docRef = await  _db.collection("categories").add(catToAdd.toFirestore());
+    await docRef.update({'id': docRef.id});
+    return true;
+  } catch (e) {
+    print("Error adding custom category: $e");
+    return false;
+  }
+}
 }

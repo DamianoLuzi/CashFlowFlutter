@@ -61,7 +61,7 @@ class CategoriesScreen extends StatelessWidget {
               final icon = iconController.text.trim();
               if (name.isNotEmpty && icon.isNotEmpty) {
                 final vm = context.read<CategoryViewModel>();
-                vm.addCustomCategory(Category(name: name, icon: icon));
+                vm.addCustomCategory(Category( name: name,icon: icon));
                 Navigator.pop(ctx);
               }
             },

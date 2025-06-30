@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterapp/models/category.dart';
 import 'package:flutterapp/models/transaction.dart';
 import 'package:flutterapp/repository/supabase_service.dart';
+import 'package:flutterapp/screens/categories.dart';
 import 'package:flutterapp/viewmodels/category_view_model.dart';
 import 'package:flutterapp/viewmodels/transaction_view_model.dart';
 import 'package:provider/provider.dart';
@@ -153,8 +154,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 icon: const Icon(Icons.add),
                 label: const Text("Add Custom Category"),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/addcategory'); // Implement this route
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CategoriesScreen()),
+                  );
                 },
+                
               ),
             ),
             const SizedBox(height: 16),
