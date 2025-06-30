@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/viewmodels/notification_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:flutterapp/viewmodels/profile_view_model.dart';
 import 'package:flutterapp/viewmodels/budget_view_model.dart';
@@ -59,10 +60,11 @@ class ProfileScreen extends StatelessWidget {
                     onChanged: profileVM.toggleOverBudgetAlerts,
                   ),
                   SwitchListTile(
-                    value: profileVM.preferences.spendingSummary,
+                    value: profileVM.preferences.spendingSummaries,
                     title: Text("Spending Summary Notifications"),
                     onChanged: (enabled) {
                       profileVM.toggleSpendingSummary(enabled); // You'll add this method below
+                     // NotificationHelper.scheduleNextMinuteSpendingSummary(summaryText: summaryText, id: id)
                     },
                   ),
                   const SizedBox(height: 24),

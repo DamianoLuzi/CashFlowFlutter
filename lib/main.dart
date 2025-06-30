@@ -23,8 +23,6 @@ void main() async {
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Initialize Firebase
   tz.initializeTimeZones();
   await NotificationHelper.initialize();
   //runApp(const MyApp());
@@ -55,15 +53,12 @@ class MyApp extends StatelessWidget {
       ),
       home: StreamBuilder<User?>(
         stream: authService.authStateChanges,
-        //AuthService().authStateChanges,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasData && snapshot.data != null) {
-            // User is logged in
             return const HomeScreen();
           } else {
-            // User is not logged in
             return const LoginScreen();
           }
         },

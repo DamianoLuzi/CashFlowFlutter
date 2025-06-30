@@ -60,7 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final authService = Provider.of<AuthService>(context, listen: false);
     await authService.signOut();
     Fluttertoast.showToast(msg: "Logged out successfully!");
-    // The StreamBuilder in main.dart will automatically navigate to LoginScreen
   }
 
   @override
@@ -72,8 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar can be dynamic based on selected tab, or common for all.
-      // For simplicity, let's have a generic one here or remove it if screens have their own.
       appBar: AppBar(
         title: Text(BottomNavItem.values[_selectedIndex].label),
         centerTitle: true,
@@ -93,7 +90,6 @@ class _HomeScreenState extends State<HomeScreen> {
             _selectedIndex = index;
           });
         },
-        // Disable swiping if you only want tab navigation via bottom bar
         physics: const NeverScrollableScrollPhysics(),
         children: _widgetOptions, // Disables horizontal swipe
       ),
@@ -105,10 +101,10 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }).toList(),
         currentIndex: _selectedIndex,
-        selectedItemColor: Theme.of(context).colorScheme.primary, // Uses your app's primary color
+        selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed, // Required for more than 3 items
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

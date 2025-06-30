@@ -4,6 +4,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 class NotificationHelper {
   static final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
+  static FlutterLocalNotificationsPlugin get plugin => _plugin;
 
   static Future<void> initialize() async {
     const AndroidInitializationSettings androidInitSettings =
@@ -53,7 +54,7 @@ static tz.TZDateTime _nextInstanceOfWeekdayTime({
 }
 
 
-  static Future<void> scheduleWeeklySpendingSummary({
+  static Future<void> scheduleSpendingSummary({
   required String summaryText,
   required int id,
   required int weekday, // 1 = Monday, 7 = Sunday
@@ -63,7 +64,7 @@ static tz.TZDateTime _nextInstanceOfWeekdayTime({
   const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
     'summary_channel_id',
     'Spending Summaries',
-    channelDescription: 'Weekly spending summary',
+    channelDescription: 'spending summary',
     importance: Importance.defaultImportance,
     priority: Priority.defaultPriority,
   );
@@ -78,12 +79,44 @@ static tz.TZDateTime _nextInstanceOfWeekdayTime({
 
   await _plugin.zonedSchedule(
     id,
-    'Weekly Spending Summary',
+    'Spending Summary',
     summaryText,
     scheduledDate,
     notificationDetails,
     matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
   );
+}
+
+// In your NotificationHelper class
+
+static Future<void> scheduleNextMinuteSpendingSummary({
+  required String summaryText,
+  required int id,
+}) async {
+  const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    'summary_channel_id',
+    'Spending Summaries',
+    channelDescription: 'Weekly spending summary (testing)',
+    importance: Importance.defaultImportance,
+    priority: Priority.defaultPriority,
+  );
+
+  const NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
+
+  // Schedule for one minute from now for testing
+  final tz.TZDateTime scheduledDate = tz.TZDateTime.now(tz.local).add(const Duration(minutes: 1));
+
+  await _plugin.zonedSchedule(
+    id,
+    'Test Spending Summary (Next Minute)',
+    summaryText,
+    scheduledDate,
+    notificationDetails,
+    // Remove matchDateTimeComponents for one-off scheduling at a specific future time
+    // matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime, // <--- REMOVE OR COMMENT OUT FOR THIS TEST
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  );
+  print('Scheduled notification ID $id for: $scheduledDate');
 }
 }

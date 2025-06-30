@@ -44,12 +44,18 @@ class TransactionViewModel extends ChangeNotifier {
     _auth.authStateChanges().listen((user) {
       if (user != null) {
         _loadData(user.uid);
-        _listenToTransactions(); // Start listening to transactions
-        _listenToBudgets(); // Start listening to budgets
-      } else {
+        //_listenToTransactions();
+        //_listenToBudgets(); 
+        NotificationHelper.scheduleNextMinuteSpendingSummary(
+        summaryText: 'This is a test summary for the next minute!',
+        id: 100, // Use a unique ID for this test notification
+      );
+    } else {
         _transactions = [];
         _budgets = [];
         _userNotificationPreferences = NotificationPreferences();
+        NotificationHelper.plugin.cancel(100);
+        notifyListeners();
         notifyListeners();
       }
     });
@@ -57,8 +63,26 @@ class TransactionViewModel extends ChangeNotifier {
 
   void _loadData(String userId) async {
     await _loadUserNotificationPreferences(userId);
+    _listenToTransactions();
+    _listenToBudgets();
+    _manageWeeklySummaryNotification();
   }
-
+  void _manageWeeklySummaryNotification() {
+    if (_userNotificationPreferences.spendingSummaries) {
+      NotificationHelper.scheduleSpendingSummary(
+        summaryText: "Your weekly spending summary is ready!",
+        id: 1000, // Use the consistent integer ID
+        weekday: 1, // Monday (1 = Monday, 7 = Sunday)
+        hour: 9,    // 9 AM
+        minute: 0,  // 0 minutes
+      );
+      print("Weekly spending summary scheduled.");
+    } else {
+      // Cancel the notification if disabled
+      NotificationHelper.plugin.cancel(1000);
+      print("Weekly spending summary cancelled.");
+    }
+  }
   void _listenToTransactions() {
     _transactionsSubscription = _transactionService.getTransactionsForCurrentUser().listen((transactionsList) {
       _transactions = transactionsList;
@@ -191,7 +215,7 @@ void dispose() {
     if (currentPeriodExpensesForCategory > budgetForCategory.amount) {
       final amountOver = currentPeriodExpensesForCategory - budgetForCategory.amount;
       print("Over budget for '$category' by €$amountOver. Triggering notification.");
-      Fluttertoast.showToast(msg: "Over budget in $category by €${amountOver.toStringAsFixed(2)}", toastLength: Toast.LENGTH_LONG);
+      //Fluttertoast.showToast(msg: "Over budget in $category by €${amountOver.toStringAsFixed(2)}", toastLength: Toast.LENGTH_LONG);
       // TODO: Integrate local notification package here for persistent notification
       NotificationHelper.showOverBudgetNotification(/* getApplication(), */ category, amountOver);
     } else {

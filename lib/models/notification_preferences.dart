@@ -1,45 +1,23 @@
-/* class NotificationPreferences {
-  final bool overBudgetAlerts;
-  // Add other preferences as needed
-
-  NotificationPreferences({
-    this.overBudgetAlerts = true, // Default to true
-  });
-
-  factory NotificationPreferences.fromMap(Map<String, dynamic> data) {
-    return NotificationPreferences(
-      overBudgetAlerts: data['overBudgetAlerts'] ?? true,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'overBudgetAlerts': overBudgetAlerts,
-    };
-  }
-}
- */
-
 class NotificationPreferences {
   final bool overBudgetAlerts;
-  final bool spendingSummary;
+  final bool spendingSummaries;
 
   NotificationPreferences({
     this.overBudgetAlerts = false,
-    this.spendingSummary = false, 
+    this.spendingSummaries = false, 
   });
 
   factory NotificationPreferences.fromMap(Map<String, dynamic> data) {
     return NotificationPreferences(
       overBudgetAlerts: data['overBudgetAlerts'] ?? false,
-      spendingSummary: data['spendingSummary'] ?? false,
+      spendingSummaries: data['spendingSummaries'] ?? false,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'overBudgetAlerts': overBudgetAlerts,
-      'spendingSummary': spendingSummary,
+      'spendingSummaries': spendingSummaries,
     };
   }
   NotificationPreferences copyWith({
@@ -48,7 +26,7 @@ class NotificationPreferences {
   }) {
     return NotificationPreferences(
       overBudgetAlerts: overBudgetAlerts ?? this.overBudgetAlerts,
-      spendingSummary: spendingSummary ?? this.spendingSummary,
+      spendingSummaries: spendingSummary ?? this.spendingSummaries,
     );
   }
 }

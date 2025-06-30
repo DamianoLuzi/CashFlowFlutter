@@ -7,10 +7,6 @@ class UserRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // This is a simplified representation.
-  // In a real app, you might have a User model that contains preferences.
-  // For now, directly fetching preferences and budgets.
-
   Future<NotificationPreferences?> getUserNotificationPreferences(String userId) async {
     try {
       DocumentSnapshot doc = await _db.collection("users").doc(userId).get();
@@ -63,5 +59,4 @@ class UserRepository {
     }
   }
 
-  // You'll need more methods for updating/deleting budgets if your Android app has them
 }
