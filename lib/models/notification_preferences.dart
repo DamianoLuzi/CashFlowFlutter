@@ -26,7 +26,7 @@ class NotificationPreferences {
   }) {
     return NotificationPreferences(
       overBudgetAlerts: overBudgetAlerts ?? this.overBudgetAlerts,
-      spendingSummaries: spendingSummary ?? this.spendingSummaries,
+      spendingSummaries: spendingSummary ?? spendingSummaries,
     );
   }
 }

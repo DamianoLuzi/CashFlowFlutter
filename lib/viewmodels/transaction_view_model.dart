@@ -44,19 +44,18 @@ class TransactionViewModel extends ChangeNotifier {
     _auth.authStateChanges().listen((user) {
       if (user != null) {
         _loadData(user.uid);
-        //_listenToTransactions();
-        //_listenToBudgets(); 
         NotificationHelper.scheduleNextMinuteSpendingSummary(
         summaryText: 'This is a test summary for the next minute!',
         id: 100, // Use a unique ID for this test notification
       );
+      print('Attempted to schedule next minute test summary.');
     } else {
         _transactions = [];
         _budgets = [];
         _userNotificationPreferences = NotificationPreferences();
         NotificationHelper.plugin.cancel(100);
         notifyListeners();
-        notifyListeners();
+        //notifyListeners();
       }
     });
   }
@@ -65,29 +64,28 @@ class TransactionViewModel extends ChangeNotifier {
     await _loadUserNotificationPreferences(userId);
     _listenToTransactions();
     _listenToBudgets();
-    _manageWeeklySummaryNotification();
+    _manageSpendingSummaryNotification();
   }
-  void _manageWeeklySummaryNotification() {
+  void _manageSpendingSummaryNotification() {
     if (_userNotificationPreferences.spendingSummaries) {
       NotificationHelper.scheduleSpendingSummary(
-        summaryText: "Your weekly spending summary is ready!",
-        id: 1000, // Use the consistent integer ID
-        weekday: 1, // Monday (1 = Monday, 7 = Sunday)
-        hour: 9,    // 9 AM
-        minute: 0,  // 0 minutes
+        summaryText: "Your spending summary is ready!",
+        id: 1000, 
+        weekday: 1, 
+        hour: 9,    
+        minute: 0,
       );
-      print("Weekly spending summary scheduled.");
+      print("Spending summary scheduled.");
     } else {
-      // Cancel the notification if disabled
       NotificationHelper.plugin.cancel(1000);
-      print("Weekly spending summary cancelled.");
+      print("Spending summary cancelled.");
     }
   }
   void _listenToTransactions() {
     _transactionsSubscription = _transactionService.getTransactionsForCurrentUser().listen((transactionsList) {
       _transactions = transactionsList;
       notifyListeners();
-      _checkAllBudgets();
+      //_checkAllBudgets();
     });
   }
 
@@ -95,7 +93,7 @@ class TransactionViewModel extends ChangeNotifier {
     _budgetsSubscription = _userRepository.getBudgetsForCurrentUser().listen((budgetsList) {
       _budgets = budgetsList;
       notifyListeners();
-      _checkAllBudgets();
+      //_checkAllBudgets();
     });
   }
 

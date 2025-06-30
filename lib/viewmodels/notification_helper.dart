@@ -57,7 +57,7 @@ static tz.TZDateTime _nextInstanceOfWeekdayTime({
   static Future<void> scheduleSpendingSummary({
   required String summaryText,
   required int id,
-  required int weekday, // 1 = Monday, 7 = Sunday
+  required int weekday,
   required int hour,
   required int minute,
 }) async {
@@ -77,18 +77,20 @@ static tz.TZDateTime _nextInstanceOfWeekdayTime({
     minute: minute,
   );
 
+  // SUCH HICH FREQ for TESTING PURPOSES ONLY
+  final tz.TZDateTime TemporaryTestingscheduledtime = tz.TZDateTime.now(tz.local).add(const Duration(minutes: 1));
+
   await _plugin.zonedSchedule(
     id,
     'Spending Summary',
     summaryText,
-    scheduledDate,
+    TemporaryTestingscheduledtime ,
     notificationDetails,
     matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
   );
+  print('Successfully called zonedSchedule for ID $id for: $scheduledDate');
 }
-
-// In your NotificationHelper class
 
 static Future<void> scheduleNextMinuteSpendingSummary({
   required String summaryText,
@@ -104,19 +106,16 @@ static Future<void> scheduleNextMinuteSpendingSummary({
 
   const NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
 
-  // Schedule for one minute from now for testing
   final tz.TZDateTime scheduledDate = tz.TZDateTime.now(tz.local).add(const Duration(minutes: 1));
-
+  
   await _plugin.zonedSchedule(
     id,
     'Test Spending Summary (Next Minute)',
     summaryText,
     scheduledDate,
     notificationDetails,
-    // Remove matchDateTimeComponents for one-off scheduling at a specific future time
-    // matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime, // <--- REMOVE OR COMMENT OUT FOR THIS TEST
     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
   );
-  print('Scheduled notification ID $id for: $scheduledDate');
+  print('Scheduled NextMinute summary notification ID $id for: $scheduledDate');
 }
 }

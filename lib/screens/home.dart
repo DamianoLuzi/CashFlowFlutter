@@ -3,6 +3,7 @@ import 'package:flutterapp/screens/add_transaction.dart';
 import 'package:flutterapp/repository/auth_service.dart';
 import 'package:flutterapp/screens/misc.dart';
 import 'package:flutterapp/screens/transactions.dart';
+import 'package:flutterapp/screens/dashboard_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
@@ -36,26 +37,23 @@ class _HomeScreenState extends State<HomeScreen> {
   // We use PageStorageKey to maintain scroll position and state for each page
   // when navigating between tabs.
   static final List<Widget> _widgetOptions = <Widget>[
-    const OverviewScreen(key: PageStorageKey('overviewScreen')),
+    //const OverviewScreen(key: PageStorageKey('overviewScreen')),
+    const DashboardScreen(key: PageStorageKey('dashboardScreen')),
     const AddTransactionScreen(key: PageStorageKey('addTransactionScreen')),
     //const TransactionListScreen(key: PageStorageKey('transactionListScreen')),
     TransactionsScreen(),
     const ProfileScreen(key: PageStorageKey('profileScreen')),
   ];
-
-  // Controller for page view to allow programmatic page changes if needed
   final PageController _pageController = PageController();
 
-  // Callback for when a bottom navigation bar item is tapped
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    // Animate to the selected page
     _pageController.jumpToPage(index);
   }
 
-  // Example logout function (you might integrate this into your ProfileScreen)
+
   void _logout() async {
     final authService = Provider.of<AuthService>(context, listen: false);
     await authService.signOut();

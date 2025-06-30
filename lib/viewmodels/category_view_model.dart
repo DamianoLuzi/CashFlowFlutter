@@ -41,9 +41,10 @@ class CategoryViewModel extends foundation.ChangeNotifier {
       return;
     }
     _db
-        .collection("users")
-        .doc(userId)
-        .collection("customCategories")
+        .collection("categories")
+        .where("userId", isEqualTo: userId)
+        //.doc(userId)
+        //.collection("customCategories")
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => Category.fromMap(doc.data())).toList())
         .listen((customCategories) {
@@ -75,7 +76,8 @@ class CategoryViewModel extends foundation.ChangeNotifier {
     final userId = _auth.currentUser?.uid;
     if (userId == null) return false;
     try {
-      await _db.collection("users").doc(userId).collection("customCategories").doc(category.name).set(category.toMap());
+      //await _db.collection("users").doc(userId).collection("customCategories").doc(category.name).set(category.toMap());
+      await _db.collection("categories").where("userId", isEqualTo: userId);
       return true;
     } catch (e) {
       print("Error adding custom category: $e");
