@@ -8,6 +8,7 @@ import 'package:flutterapp/screens/signup.dart';
 import 'package:flutterapp/viewmodels/category_view_model.dart';
 import 'package:flutterapp/viewmodels/notification_helper.dart';
 import 'package:flutterapp/viewmodels/transaction_view_model.dart';
+import 'package:flutterapp/viewmodels/dashboard_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -18,20 +19,22 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp();
-  // In main() or your MyApp's initState
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
   tz.initializeTimeZones();
   await NotificationHelper.initialize();
-  //runApp(const MyApp());
+
   runApp(
     MultiProvider(
     providers: [
       Provider<AuthService>(create: (_) => AuthService()),
       ChangeNotifierProvider(create: (_) => CategoryViewModel()),
       ChangeNotifierProvider(create: (_) => TransactionViewModel()),
+      ChangeNotifierProvider( create: (context) => 
+          DashboardViewModel(Provider.of<TransactionViewModel>(context, listen: false),),
+      ),
     ],
       child: const MyApp(),
     ),
