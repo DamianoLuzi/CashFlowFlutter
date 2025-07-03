@@ -46,16 +46,15 @@ class TransactionViewModel extends ChangeNotifier {
         _loadData(user.uid);
         NotificationHelper.scheduleNextMinuteSpendingSummary(
         summaryText: 'This is a test summary for the next minute!',
-        id: 100, // Use a unique ID for this test notification
+        id: 100, 
       );
       print('Attempted to schedule next minute test summary.');
     } else {
         _transactions = [];
         _budgets = [];
         _userNotificationPreferences = NotificationPreferences();
-        NotificationHelper.plugin.cancel(100);
+        //NotificationHelper.plugin.cancel(100);
         notifyListeners();
-        //notifyListeners();
       }
     });
   }
@@ -77,7 +76,7 @@ class TransactionViewModel extends ChangeNotifier {
       );
       print("Spending summary scheduled.");
     } else {
-      NotificationHelper.plugin.cancel(1000);
+      //NotificationHelper.plugin.cancel(1000);
       print("Spending summary cancelled.");
     }
   }
@@ -85,7 +84,6 @@ class TransactionViewModel extends ChangeNotifier {
     _transactionsSubscription = _transactionService.getTransactionsForCurrentUser().listen((transactionsList) {
       _transactions = transactionsList;
       notifyListeners();
-      //_checkAllBudgets();
     });
   }
 
@@ -93,7 +91,6 @@ class TransactionViewModel extends ChangeNotifier {
     _budgetsSubscription = _userRepository.getBudgetsForCurrentUser().listen((budgetsList) {
       _budgets = budgetsList;
       notifyListeners();
-      //_checkAllBudgets();
     });
   }
 
@@ -192,10 +189,9 @@ void dispose() {
 
     final budgetForCategory = _budgets.firstWhere(
       (budget) => budget.category == category && budget.userId == userId,
-      orElse: () => throw Exception("No budget found for category $category"), // Handle no budget scenario
+      orElse: () => throw Exception("No budget found for category $category"),
     );
 
-    // Calculate current month's expenses for this category
     final now = DateTime.now();
     final currentMonthStart = DateTime(now.year, now.month, 1);
 
@@ -204,7 +200,7 @@ void dispose() {
             txn.type == TransactionType.EXPENSE &&
             txn.category == category &&
             txn.userId == userId &&
-            txn.date.toDate().isAfter(currentMonthStart.subtract(const Duration(days: 1))) // Check from start of month
+            txn.date.toDate().isAfter(currentMonthStart.subtract(const Duration(days: 1)))
             )
         .fold(0.0, (sum, txn) => sum + txn.amount);
 
@@ -213,8 +209,6 @@ void dispose() {
     if (currentPeriodExpensesForCategory > budgetForCategory.amount) {
       final amountOver = currentPeriodExpensesForCategory - budgetForCategory.amount;
       print("Over budget for '$category' by €$amountOver. Triggering notification.");
-      //Fluttertoast.showToast(msg: "Over budget in $category by €${amountOver.toStringAsFixed(2)}", toastLength: Toast.LENGTH_LONG);
-      // TODO: Integrate local notification package here for persistent notification
       NotificationHelper.showOverBudgetNotification(/* getApplication(), */ category, amountOver);
     } else {
       print("Still within budget for '$category'.");

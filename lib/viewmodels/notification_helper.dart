@@ -77,14 +77,11 @@ static tz.TZDateTime _nextInstanceOfWeekdayTime({
     minute: minute,
   );
 
-  // SUCH HICH FREQ for TESTING PURPOSES ONLY
-  final tz.TZDateTime TemporaryTestingscheduledtime = tz.TZDateTime.now(tz.local).add(const Duration(minutes: 1));
-
   await _plugin.zonedSchedule(
     id,
     'Spending Summary',
     summaryText,
-    TemporaryTestingscheduledtime ,
+    scheduledDate ,
     notificationDetails,
     matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,

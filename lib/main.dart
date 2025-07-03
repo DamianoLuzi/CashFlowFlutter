@@ -5,8 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutterapp/screens/home.dart';
 import 'package:flutterapp/screens/login.dart';
 import 'package:flutterapp/screens/signup.dart';
+import 'package:flutterapp/viewmodels/budget_view_model.dart';
 import 'package:flutterapp/viewmodels/category_view_model.dart';
 import 'package:flutterapp/viewmodels/notification_helper.dart';
+import 'package:flutterapp/viewmodels/profile_view_model.dart';
 import 'package:flutterapp/viewmodels/transaction_view_model.dart';
 import 'package:flutterapp/viewmodels/dashboard_view_model.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +37,8 @@ void main() async {
       ChangeNotifierProvider( create: (context) => 
           DashboardViewModel(Provider.of<TransactionViewModel>(context, listen: false),),
       ),
+      ChangeNotifierProvider(create: (_) => ProfileViewModel()),
+      ChangeNotifierProvider(create: (_) => BudgetViewModel()),
     ],
       child: const MyApp(),
     ),

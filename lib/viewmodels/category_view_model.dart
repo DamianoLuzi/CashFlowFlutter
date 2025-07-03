@@ -33,25 +33,6 @@ class CategoryViewModel extends foundation.ChangeNotifier {
     });
   }
 
-/*   void _listenToCustomCategories() {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null) {
-      _categories = [];
-      notifyListeners();
-      return;
-    }
-    _db
-        .collection("categories")
-        .where("userId", isEqualTo: userId)
-        //.doc(userId)
-        //.collection("customCategories")
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => Category.fromMap(doc.data())).toList())
-        .listen((customCategories) {
-          _categories = customCategories;
-          notifyListeners();
-        });
-  } */
 
   void _listenToCustomCategories() {
   final userId = _auth.currentUser?.uid;
@@ -91,23 +72,6 @@ class CategoryViewModel extends foundation.ChangeNotifier {
     combinedList.sort((a, b) => a.name.compareTo(b.name));
     return combinedList;
   }
-
- /*  Future<bool> addCustomCategory(name, icon) async {
-  final userId = _auth.currentUser?.uid;
-  if (userId == null) return false;
-  Category(userId: userId, name: name, icon: icon);
-  try {
-    await _db.collection("categories").add({
-      "name": category.name,
-      "icon": category.icon,
-      "userId": userId, // required for filtering
-    });
-    return true;
-  } catch (e) {
-    print("Error adding custom category: $e");
-    return false;
-  }
-} */
 
 Future<bool> addCustomCategory(Category category) async {
   final userId = _auth.currentUser?.uid;

@@ -46,3 +46,6 @@ app.*.map.json
 
 .env
 /android/app/google-services.json
+
+/ios/Flutter/flutter_export_environment.sh
+/ios/Flutter/flutter_export_environment 2.sh

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/screens/budgets.dart';
 import 'package:provider/provider.dart';
 import 'package:flutterapp/viewmodels/profile_view_model.dart';
 import 'package:flutterapp/viewmodels/budget_view_model.dart';
@@ -23,12 +24,14 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    
+ /*    MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ProfileViewModel()),
         ChangeNotifierProvider(create: (_) => BudgetViewModel()), // For budget list
       ],
-      child: Consumer2<ProfileViewModel, BudgetViewModel>(
+      child:  */
+    return Consumer2<ProfileViewModel, BudgetViewModel>(
         builder: (context, profileVM, budgetVM, _) {
           final budgets = budgetVM.budgets;
 
@@ -69,6 +72,17 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   Text("Your Budgets", style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 8),
+                  const SizedBox(height: 16), // Spacing
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const BudgetsScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.list_alt),
+                  label: const Text('Manage All Budgets'),
+                ),
                   if (budgets.isEmpty)
                     Text("No budgets set", style: TextStyle(color: Colors.grey)),
                   ...budgets.map((b) => ListTile(
@@ -94,7 +108,6 @@ class ProfileScreen extends StatelessWidget {
             ),
           );
         },
-      ),
     );
   }
 }
