@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'ExpTrackPM Flutter',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
         useMaterial3: true,
       ),
       home: StreamBuilder<User?>(

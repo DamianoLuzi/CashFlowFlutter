@@ -16,7 +16,6 @@ class TransactionsScreen extends StatefulWidget {
 }
 
 class _TransactionsScreenState extends State<TransactionsScreen> {
-  TransactionType? _filter;
 
   @override
   Widget build(BuildContext context) {
@@ -26,19 +25,20 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         appBar: AppBar(
           title: Text("Transactions"),
           actions: [
-            PopupMenuButton<TransactionType?>(
-              icon: Icon(Icons.filter_list),
-              onSelected: (val) {
-                setState(() {
-                  _filter = val;
-                });
-                context.read<TransactionViewModel>().setFilter(val);
+            Consumer<TransactionViewModel>( 
+              builder: (context, vm, _) {
+                return PopupMenuButton<TransactionType?>(
+                  icon: Icon(Icons.filter_list),
+                  onSelected: (val) {
+                    vm.setFilter(val);
+                  },
+                  itemBuilder: (_) => [
+                    PopupMenuItem(value: null, child: Text("All")),
+                    PopupMenuItem(value: TransactionType.INCOME, child: Text("Income")),
+                    PopupMenuItem(value: TransactionType.EXPENSE, child: Text("Expense")),
+                  ],
+                );
               },
-              itemBuilder: (_) => [
-                PopupMenuItem(value: null, child: Text("All")),
-                PopupMenuItem(value: TransactionType.INCOME, child: Text("Income")),
-                PopupMenuItem(value: TransactionType.EXPENSE, child: Text("Expense")),
-              ],
             )
           ],
         ),
@@ -77,69 +77,71 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   void _showAddBudgetDialog(BuildContext context) {
-  final amountController = TextEditingController();
-  final categoryVM = context.read<CategoryViewModel>();
-  final categories = categoryVM.getAllCategoriesForDisplay();
+    final amountController = TextEditingController();
+    final categoryVM = context.read<CategoryViewModel>();
+    final categories = categoryVM.getAllCategoriesForDisplay();
 
-  showDialog(
-    context: context,
-    builder: (ctx) {
-      String? selectedCategory;
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        String? selectedCategory;
 
-      return StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text("Add Budget"),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                DropdownButtonFormField<String>(
-                  value: selectedCategory,
-                  items: categories
-                      .map((c) => DropdownMenuItem(
-                            value: c.name,
-                            child: Text("${c.icon} ${c.name}"),
-                          ))
-                      .toList(),
-                  onChanged: (val) => setState(() => selectedCategory = val),
-                  decoration: InputDecoration(labelText: "Category"),
-                ),
-                TextField(
-                  controller: amountController,
-                  decoration: InputDecoration(labelText: "Amount"),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                ),
-              ],
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: Text("Add Budget"),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    value: selectedCategory,
+                    items: categories
+                        .map((c) => DropdownMenuItem(
+                              value: c.name,
+                              child: Text("${c.icon} ${c.name}"),
+                            ))
+                        .toList(),
+                    onChanged: (val) => setState(() => selectedCategory = val),
+                    decoration: InputDecoration(labelText: "Category"),
+                  ),
+                  TextField(
+                    controller: amountController,
+                    decoration: InputDecoration(labelText: "Amount"),
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  ),
+                ],
+              ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text("Cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final amount = double.tryParse(amountController.text.trim()) ?? 0.0;
+
+                  if (selectedCategory != null && amount > 0) {
+                    final budget = Budget(
+                      userId: FirebaseAuth.instance.currentUser!.uid,
+                      category: selectedCategory!,
+                      amount: amount,
+                    );
+
+                    context.read<TransactionViewModel>().addBudget(budget);
+                    Navigator.pop(ctx);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Please select a category and enter a valid amount.")),
+                    );
+                  }
+                },
+                child: Text("Add"),
+              )
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final amount = double.tryParse(amountController.text.trim()) ?? 0.0;
-
-                if (selectedCategory != null && amount > 0) {
-                  final budget = Budget(
-                    userId: FirebaseAuth.instance.currentUser!.uid,
-                    category: selectedCategory!,
-                    amount: amount,
-                  );
-
-                  context.read<TransactionViewModel>().addBudget(budget);
-                  Navigator.pop(ctx);
-                } else {
-                  // Optionally show an error message
-                }
-              },
-              child: Text("Add"),
-            )
-          ],
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 }
