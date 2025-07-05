@@ -26,7 +26,16 @@ class BudgetsScreen extends StatelessWidget {
                 final budget = budgets[index];
                 return ListTile(
                   title: Text(budget.category),
-                  trailing: Text("€${budget.amount.toStringAsFixed(2)}"),
+                  trailing: Row( // Use a Row for multiple trailing widgets
+                    mainAxisSize: MainAxisSize.min, // Keep row compact
+                    children: [
+                      Text("€${budget.amount.toStringAsFixed(2)}"),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red), // Delete icon
+                        onPressed: () => _confirmDeleteBudget(context, budget), // Confirmation dialog
+                      ),
+                    ],
+                  ),
                 );
               },
             );
@@ -89,85 +98,29 @@ class BudgetsScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-
-/* class BudgetsScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => TransactionViewModel(), // Budgets live in transaction VM
-      child: Scaffold(
-        appBar: AppBar(title: Text("Budgets")),
-        body: Consumer<TransactionViewModel>(
-          builder: (context, vm, _) {
-            final budgets = vm.budgets;
-            if (budgets.isEmpty) return Center(child: Text("No budgets set"));
-
-            return ListView.builder(
-              itemCount: budgets.length,
-              itemBuilder: (context, index) {
-                final budget = budgets[index];
-                return ListTile(
-                  title: Text("${budget.category}"),
-                  trailing: Text("€${budget.amount.toStringAsFixed(2)}"),
-                );
-              },
-            );
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () => _showAddBudgetDialog(context),
-        ),
-      ),
-    );
-  }
-
-  void _showAddBudgetDialog(BuildContext context) {
-    final _amountController = TextEditingController();
-    String? selectedCategory;
-
-    final categoryVM = context.read<CategoryViewModel>();
-    final categories = categoryVM.getAllCategoriesForDisplay();
-
+  void _confirmDeleteBudget(BuildContext context, Budget budget) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text("Add Budget"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DropdownButtonFormField<String>(
-              items: categories
-                  .map((c) => DropdownMenuItem(child: Text("${c.icon} ${c.name}"), value: c.name))
-                  .toList(),
-              onChanged: (val) => selectedCategory = val,
-              decoration: InputDecoration(labelText: "Category"),
-            ),
-            TextField(controller: _amountController, decoration: InputDecoration(labelText: "Amount"), keyboardType: TextInputType.number),
-          ],
-        ),
+        title: const Text("Delete Budget"),
+        content: Text("Are you sure you want to delete the budget for ${budget.category}?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text("Cancel")),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Cancel"),
+          ),
           ElevatedButton(
             onPressed: () {
-              final amount = double.tryParse(_amountController.text.trim()) ?? 0.0;
-              if (selectedCategory != null && amount > 0) {
-                final budget = Budget(
-                  userId: FirebaseAuth.instance.currentUser!.uid,
-                  category: selectedCategory!,
-                  amount: amount,
-                );
-                context.read<TransactionViewModel>().addBudget(budget);
-                Navigator.pop(ctx);
-              }
+              context.read<BudgetViewModel>().deleteBudget(budget.id!); // Pass budget ID
+              Navigator.pop(ctx); // Close dialog
             },
-            child: Text("Add"),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red), // Red button for delete
+            child: const Text("Delete", style: TextStyle(color: Colors.white)),
           )
         ],
       ),
     );
   }
+
 }
- */

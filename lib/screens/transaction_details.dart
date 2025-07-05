@@ -163,6 +163,28 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
               },
               child: Text("Save Changes"),
             ),
+            ElevatedButton(
+              onPressed: () async {
+                final vm = context.read<TransactionViewModel>();
+                bool confirmed = await showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Delete Transaction?'),
+                    content: Text('Are you sure you want to delete this transaction?'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel')),
+                      TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Delete')),
+                    ],
+                  ),
+                );
+
+                if (confirmed) {
+                  await vm.deleteTransaction(widget.transaction.id!);
+                  Navigator.pop(context); // go back after deletion
+                }
+              },
+              child: Text("Delete Transaction"),
+            ),
           ],
         ),
       ),

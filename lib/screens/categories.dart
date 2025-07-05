@@ -22,6 +22,15 @@ class CategoriesScreen extends StatelessWidget {
                 return ListTile(
                   leading: Text(category.icon! , style: TextStyle(fontSize: 24)),
                   title: Text(category.name),
+                  trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _confirmDeleteCategory(context, category, vm), // Pass vm
+                            ),
+                          ],
+                        )
                 );
               },
             );
@@ -67,6 +76,35 @@ class CategoriesScreen extends StatelessWidget {
             },
             child: Text("Add"),
           ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDeleteCategory(BuildContext context, Category category, CategoryViewModel vm) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Delete Category"),
+        content: Text("Are you sure you want to delete the category '${category.name}'?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (category.id != null) { // Ensure ID exists for deletion
+                vm.deleteCategory(category.id!);
+              } else {
+                // This case ideally shouldn't happen for custom categories if ID is set on creation
+                print("Error: Attempted to delete a custom category without an ID.");
+              }
+              Navigator.pop(ctx); // Close dialog
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text("Delete", style: TextStyle(color: Colors.white)),
+          )
         ],
       ),
     );

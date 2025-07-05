@@ -164,9 +164,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     final total = data.values.fold(0.0, (sum, amount) => sum + amount);
     final List<Color> colors = [
-      Colors.blue, Colors.green, Colors.red, Colors.purple,
-      Colors.orange, Colors.teal, Colors.brown, Colors.pink,
-      Colors.cyan, Colors.indigo,
+      Colors.blue,
+      Colors.green,
+      Colors.red,
+      Colors.purple,
+      Colors.orange,
+      Colors.teal,
+/*       Colors.brown,
+      Colors.pink,
+      Colors.cyan,
+      Colors.indigo,  */
     ];
 
     int colorIndex = 0;
