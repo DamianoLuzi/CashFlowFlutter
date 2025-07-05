@@ -23,7 +23,7 @@ class ProfileViewModel extends ChangeNotifier {
     final user = _auth.currentUser;
     if (user != null) {
       _userEmail = user.email ?? '';
-      _userName = user.displayName ?? 'User'; // Or fetch from Firestore
+      _userName = user.displayName ?? 'User';
       _preferences = await _userRepository.getUserNotificationPreferences(user.uid) ?? NotificationPreferences();
       notifyListeners();
     }

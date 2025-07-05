@@ -10,6 +10,7 @@ import 'package:flutterapp/repository/transaction_service.dart';
 import 'package:flutterapp/repository/user_service.dart';
 import 'package:flutterapp/viewmodels/notification_helper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:workmanager/workmanager.dart'; 
 
 class TransactionViewModel extends ChangeNotifier {
   final TransactionService _transactionService = TransactionService();
@@ -44,16 +45,11 @@ class TransactionViewModel extends ChangeNotifier {
     _auth.authStateChanges().listen((user) {
       if (user != null) {
         _loadData(user.uid);
-        NotificationHelper.scheduleNextMinuteSpendingSummary(
-        summaryText: 'This is a test summary for the next minute!',
-        id: 100, 
-      );
-      print('Attempted to schedule next minute test summary.');
     } else {
         _transactions = [];
         _budgets = [];
         _userNotificationPreferences = NotificationPreferences();
-        //NotificationHelper.plugin.cancel(100);
+        Workmanager().cancelByUniqueName(SPENDING_SUMMARY_TASK);
         notifyListeners();
       }
     });
@@ -65,21 +61,28 @@ class TransactionViewModel extends ChangeNotifier {
     _listenToBudgets();
     _manageSpendingSummaryNotification();
   }
+
   void _manageSpendingSummaryNotification() {
-    if (_userNotificationPreferences.spendingSummaries) {
-      NotificationHelper.scheduleSpendingSummary(
-        summaryText: "Your spending summary is ready!",
-        id: 1000, 
-        weekday: 1, 
-        hour: 9,    
-        minute: 0,
-      );
-      print("Spending summary scheduled.");
-    } else {
-      //NotificationHelper.plugin.cancel(1000);
-      print("Spending summary cancelled.");
-    }
+
+  if (_userNotificationPreferences.spendingSummaries) {
+    print("Scheduling periodic spending summary task via Workmanager.");
+    Workmanager().registerPeriodicTask(
+      SPENDING_SUMMARY_TASK, 
+      SPENDING_SUMMARY_TASK, 
+      frequency: const Duration(seconds: 1), 
+      initialDelay: const Duration(seconds: 10),
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+        requiresBatteryNotLow: true,
+      ),
+    );
+  } else {
+    print("Cancelling periodic spending summary task via Workmanager.");
+    Workmanager().cancelByUniqueName(SPENDING_SUMMARY_TASK);
   }
+  }
+
+
   void _listenToTransactions() {
     _transactionsSubscription = _transactionService.getTransactionsForCurrentUser().listen((transactionsList) {
       _transactions = transactionsList;
@@ -138,7 +141,6 @@ void dispose() {
     bool success = await _transactionService.addTransaction(txn);
     if (success) {
       Fluttertoast.showToast(msg: "Transaction added!");
-      // Data will be reloaded automatically by stream listeners
       if (txn.type == TransactionType.EXPENSE && _userNotificationPreferences.overBudgetAlerts) {
         _checkForOverBudget(txn.userId, txn.category, txn.amount);
       }
@@ -158,7 +160,7 @@ void dispose() {
     required String category,
     String? receiptUrl,
     required Timestamp date,
-    required TransactionType type, // Make sure type is included for updates
+    required TransactionType type,
   }) async {
     final updatedTxn = _transactions.firstWhere((txn) => txn.id == id).copyWith(
       amount: amount,
@@ -209,7 +211,7 @@ void dispose() {
     if (currentPeriodExpensesForCategory > budgetForCategory.amount) {
       final amountOver = currentPeriodExpensesForCategory - budgetForCategory.amount;
       print("Over budget for '$category' by €$amountOver. Triggering notification.");
-      NotificationHelper.showOverBudgetNotification(/* getApplication(), */ category, amountOver);
+      NotificationHelper.showOverBudgetNotification( category, amountOver);
     } else {
       print("Still within budget for '$category'.");
     }
@@ -220,7 +222,7 @@ void dispose() {
     if (currentUserId == null) return;
 
     for (var budget in _budgets) {
-      _checkForOverBudget(currentUserId, budget.category, 0.0); // Pass 0.0 as we are re-evaluating, not adding a new expense
+      _checkForOverBudget(currentUserId, budget.category, 0.0);
     }
   }
 
@@ -228,10 +230,19 @@ void dispose() {
   bool success = await _userRepository.addBudget(budget);
   if (success) {
     Fluttertoast.showToast(msg: "Budget added!");
-    // No need to manually refresh, stream listener will update automatically
   } else {
     Fluttertoast.showToast(msg: "Failed to add budget.");
   }
 }
+
+Future<void> deleteTransaction(String id) async {
+  bool success = await _transactionService.deleteTransaction(id);
+  if (success) {
+    Fluttertoast.showToast(msg: "Transaction deleted!");
+  } else {
+    Fluttertoast.showToast(msg: "Failed to delete transaction.");
+  }
+}
+
 
 }

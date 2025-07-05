@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:workmanager/workmanager.dart';
 
 void main() async {
 
@@ -26,7 +27,14 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
   tz.initializeTimeZones();
+
   await NotificationHelper.initialize();
+  await NotificationHelper.requestNotificationPermission();
+
+  Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: true, 
+  );
 
   runApp(
     MultiProvider(
