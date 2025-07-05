@@ -37,4 +37,13 @@ class BudgetViewModel extends ChangeNotifier {
       Fluttertoast.showToast(msg: "Failed to add budget.");
     }
   }
+  Future<void> deleteBudget(String budgetId) async {
+    bool success = await _userRepository.deleteBudget(budgetId);
+    if (success) {
+      Fluttertoast.showToast(msg: "Budget deleted!");
+      // Data will be reloaded automatically by stream listeners
+    } else {
+      Fluttertoast.showToast(msg: "Failed to delete budget.");
+    }
+  }
 }

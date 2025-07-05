@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' as foundation;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutterapp/models/category.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class CategoryViewModel extends foundation.ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -93,4 +94,16 @@ Future<bool> addCustomCategory(Category category) async {
     return false;
   }
 }
+
+Future<bool> deleteCategory(String categoryId) async {
+    try {
+      await _db.collection("categories").doc(categoryId).delete();
+      Fluttertoast.showToast(msg: "Category deleted!"); // Feedback
+      return true;
+    } catch (e) {
+      print("Error deleting category: $e");
+      Fluttertoast.showToast(msg: "Failed to delete category."); // Feedback
+      return false;
+    }
+  }
 }

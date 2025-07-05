@@ -59,4 +59,14 @@ class UserRepository {
     }
   }
 
+  Future<bool> deleteBudget(String budgetId) async {
+    try {
+      await _db.collection("budgets").doc(budgetId).delete();
+      return true;
+    } catch (e) {
+      print("Error deleting budget: $e");
+      return false;
+    }
+  }
+
 }

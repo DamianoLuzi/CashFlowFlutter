@@ -80,4 +80,16 @@ class TransactionService {
       return [];
     }
   }
+
+  Future<bool> deleteTransaction(String id) async {
+  try {
+    await _db.collection("transaction").doc(id).delete();
+    print("Transaction deleted successfully: $id");
+    return true;
+  } catch (e) {
+    print("Error deleting transaction: $e");
+    return false;
+  }
+}
+
 }
