@@ -8,8 +8,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 
-
-// Enum to define the items in the bottom navigation bar
 enum BottomNavItem {
   overview('overview', 'Overview', Icons.home),
   add('addtransaction', 'Add', Icons.add_circle),
@@ -31,16 +29,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0; // Tracks the currently selected tab index
-
-  // List of widgets (screens) corresponding to each navigation bar item
-  // We use PageStorageKey to maintain scroll position and state for each page
-  // when navigating between tabs.
+  int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = <Widget>[
-    //const OverviewScreen(key: PageStorageKey('overviewScreen')),
     const DashboardScreen(key: PageStorageKey('dashboardScreen')),
     const AddTransactionScreen(key: PageStorageKey('addTransactionScreen')),
-    //const TransactionListScreen(key: PageStorageKey('transactionListScreen')),
     TransactionsScreen(),
     const ProfileScreen(key: PageStorageKey('profileScreen')),
   ];
@@ -73,7 +65,6 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text(BottomNavItem.values[_selectedIndex].label),
         centerTitle: true,
         actions: [
-          // Example: Logout button in AppBar, could be in Profile screen too
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,
@@ -89,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         physics: const NeverScrollableScrollPhysics(),
-        children: _widgetOptions, // Disables horizontal swipe
+        children: _widgetOptions,
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: BottomNavItem.values.map((item) {

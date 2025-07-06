@@ -15,7 +15,6 @@ class TransactionService {
 
     try {
       firestore.DocumentReference docRef = await _db.collection("transaction").add(transaction.toFirestore());
-      // Update the transaction with its ID
       await docRef.update({'id': docRef.id});
       print("Transaction added successfully with ID: ${docRef.id}");
       return true;
@@ -28,7 +27,7 @@ class TransactionService {
   Stream<List<Transaction>> getTransactionsForCurrentUser() {
     final userId = _auth.currentUser?.uid;
     if (userId == null) {
-      return Stream.value([]); // Return an empty stream if no user
+      return Stream.value([]);
     }
 
     return _db

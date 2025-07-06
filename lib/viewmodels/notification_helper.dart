@@ -128,13 +128,13 @@ static Future<void> showWeeklySummaryNotification(String summaryText) async {
       channelDescription: 'Weekly spending summary',
       importance: Importance.defaultImportance,
       priority: Priority.defaultPriority,
-      styleInformation: BigTextStyleInformation(''), // Enable long text display
+      styleInformation: BigTextStyleInformation(''),
     );
 
     const NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
 
     await _plugin.show(
-      1002, // Unique ID for spending summary notification (matches Kotlin example)
+      1002,
       'Spending Summary',
       summaryText,
       notificationDetails,

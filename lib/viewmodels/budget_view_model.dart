@@ -41,7 +41,6 @@ class BudgetViewModel extends ChangeNotifier {
     bool success = await _userRepository.deleteBudget(budgetId);
     if (success) {
       Fluttertoast.showToast(msg: "Budget deleted!");
-      // Data will be reloaded automatically by stream listeners
     } else {
       Fluttertoast.showToast(msg: "Failed to delete budget.");
     }

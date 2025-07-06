@@ -32,9 +32,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (user != null) {
       if (mounted) {
-        // Navigate to HomeScreen. The StreamBuilder in main.dart will handle this,
-        // but if you have specific logic, you could do Navigator.pushReplacementNamed(context, '/home');
-        // For now, simply letting the StreamBuilder handle it is cleaner.
         Fluttertoast.showToast(msg: "Logged in successfully!");
       }
     } else {

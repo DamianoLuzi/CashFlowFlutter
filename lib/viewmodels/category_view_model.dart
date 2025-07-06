@@ -11,7 +11,6 @@ class CategoryViewModel extends foundation.ChangeNotifier {
   List<Category> _categories = [];
   List<Category> get categories => _categories;
 
-  // Define default categories
  final List<Category> defaultCategories = [
   Category(userId: 'default', name: "Food", icon: "🍔"),
   Category(userId: 'default', name: "Transport", icon: "🚌"),
@@ -58,14 +57,12 @@ class CategoryViewModel extends foundation.ChangeNotifier {
   List<Category> getAllCategoriesForDisplay() {
     final combinedList = <Category>[];
 
-    // Add default categories first
     combinedList.addAll(defaultCategories);
 
-    // Add custom categories, preferring custom ones if names overlap
     for (var customCat in _categories) {
       final existingIndex = combinedList.indexWhere((cat) => cat.name == customCat.name);
       if (existingIndex != -1) {
-        combinedList[existingIndex] = customCat; // Replace default with custom
+        combinedList[existingIndex] = customCat;
       } else {
         combinedList.add(customCat);
       }
@@ -79,7 +76,6 @@ Future<bool> addCustomCategory(Category category) async {
   if (userId == null) return false;
 
   try {
-    // ensure the category has userId set
     final catToAdd = Category(
       userId: userId,
       name: category.name,
@@ -98,11 +94,11 @@ Future<bool> addCustomCategory(Category category) async {
 Future<bool> deleteCategory(String categoryId) async {
     try {
       await _db.collection("categories").doc(categoryId).delete();
-      Fluttertoast.showToast(msg: "Category deleted!"); // Feedback
+      Fluttertoast.showToast(msg: "Category deleted!"); 
       return true;
     } catch (e) {
       print("Error deleting category: $e");
-      Fluttertoast.showToast(msg: "Failed to delete category."); // Feedback
+      Fluttertoast.showToast(msg: "Failed to delete category.");
       return false;
     }
   }

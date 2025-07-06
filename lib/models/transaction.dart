@@ -23,7 +23,7 @@ class Transaction {
     this.receiptUrl,
   });
 
-  // Factory constructor for creating a Transaction from a Firestore document
+
   factory Transaction.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data() as Map<String, dynamic>;
     return Transaction(
@@ -40,14 +40,13 @@ class Transaction {
     );
   }
 
-  // Method to convert a Transaction to a Firestore document
   Map<String, dynamic> toFirestore() {
     return {
       'userId': userId,
       'amount': amount,
       'description': description,
       'category': category,
-      'type': type.toString().split('.').last, // Store as string
+      'type': type.toString().split('.').last, 
       'date': date,
       'receiptUrl': receiptUrl,
     };

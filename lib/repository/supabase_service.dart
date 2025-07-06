@@ -1,8 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter/foundation.dart'; // For kIsWeb
-// For File
-import 'package:path/path.dart' as p; // For path manipulation
-import 'package:image_picker/image_picker.dart'; // For XFile
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as p;
+import 'package:image_picker/image_picker.dart';
 
 class SupabaseStorageService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -10,7 +9,6 @@ class SupabaseStorageService {
 
   Future<String?> uploadFileToSupabase(XFile file) async {
     try {
-      // For web, you might get bytes directly. For mobile, read from path.
       final Uint8List fileBytes = await file.readAsBytes();
 
       final String fileName = '${DateTime.now().millisecondsSinceEpoch}_${p.basename(file.name)}';

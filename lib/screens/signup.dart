@@ -40,7 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (user != null) {
       if (mounted) {
         Fluttertoast.showToast(msg: "Account created successfully!");
-        Navigator.pop(context); // Go back to login screen
+        Navigator.pop(context);
       }
     } else {
       Fluttertoast.showToast(msg: "Sign up failed. Please try again.");
@@ -115,7 +115,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 16),
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Go back to login
+                Navigator.pop(context);
               },
               child: const Text("Already have an account? Login"),
             ),

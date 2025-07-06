@@ -27,7 +27,7 @@ class CategoriesScreen extends StatelessWidget {
                           children: [
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _confirmDeleteCategory(context, category, vm), // Pass vm
+                              onPressed: () => _confirmDeleteCategory(context, category, vm),
                             ),
                           ],
                         )
@@ -94,13 +94,12 @@ class CategoriesScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              if (category.id != null) { // Ensure ID exists for deletion
+              if (category.id != null) {
                 vm.deleteCategory(category.id!);
               } else {
-                // This case ideally shouldn't happen for custom categories if ID is set on creation
                 print("Error: Attempted to delete a custom category without an ID.");
               }
-              Navigator.pop(ctx); // Close dialog
+              Navigator.pop(ctx);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text("Delete", style: TextStyle(color: Colors.white)),

@@ -58,7 +58,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     if (image != null) {
       setState(() {
         _selectedReceiptImage = image;
-        _existingReceiptUrl = null; // Clear previous URL to avoid confusion
+        _existingReceiptUrl = null;
       });
     }
   }
@@ -180,7 +180,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
                 if (confirmed) {
                   await vm.deleteTransaction(widget.transaction.id!);
-                  Navigator.pop(context); // go back after deletion
+                  Navigator.pop(context);
                 }
               },
               child: Text("Delete Transaction"),

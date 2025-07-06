@@ -26,13 +26,13 @@ class BudgetsScreen extends StatelessWidget {
                 final budget = budgets[index];
                 return ListTile(
                   title: Text(budget.category),
-                  trailing: Row( // Use a Row for multiple trailing widgets
-                    mainAxisSize: MainAxisSize.min, // Keep row compact
+                  trailing: Row( 
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text("€${budget.amount.toStringAsFixed(2)}"),
                       IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red), // Delete icon
-                        onPressed: () => _confirmDeleteBudget(context, budget), // Confirmation dialog
+                        icon: const Icon(Icons.delete, color: Colors.red), 
+                        onPressed: () => _confirmDeleteBudget(context, budget),
                       ),
                     ],
                   ),
@@ -112,10 +112,10 @@ class BudgetsScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              context.read<BudgetViewModel>().deleteBudget(budget.id!); // Pass budget ID
-              Navigator.pop(ctx); // Close dialog
+              context.read<BudgetViewModel>().deleteBudget(budget.id!);
+              Navigator.pop(ctx); 
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red), // Red button for delete
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text("Delete", style: TextStyle(color: Colors.white)),
           )
         ],

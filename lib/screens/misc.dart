@@ -9,7 +9,6 @@ class OverviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Placeholder overview content
     return Center(
       child: Text(
         'Overview Screen',
@@ -25,12 +24,6 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
- /*    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ProfileViewModel()),
-        ChangeNotifierProvider(create: (_) => BudgetViewModel()), // For budget list
-      ],
-      child:  */
     return Consumer2<ProfileViewModel, BudgetViewModel>(
         builder: (context, profileVM, budgetVM, _) {
           final budgets = budgetVM.budgets;
@@ -65,14 +58,13 @@ class ProfileScreen extends StatelessWidget {
                     value: profileVM.preferences.spendingSummaries,
                     title: Text("Spending Summary Notifications"),
                     onChanged: (enabled) {
-                      profileVM.toggleSpendingSummary(enabled); // You'll add this method below
-                     // NotificationHelper.scheduleNextMinuteSpendingSummary(summaryText: summaryText, id: id)
+                      profileVM.toggleSpendingSummary(enabled);
                     },
                   ),
                   const SizedBox(height: 24),
                   Text("Your Budgets", style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 8),
-                  const SizedBox(height: 16), // Spacing
+                  const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: () {
                     Navigator.push(

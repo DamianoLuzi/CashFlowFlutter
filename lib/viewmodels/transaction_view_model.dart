@@ -69,12 +69,13 @@ class TransactionViewModel extends ChangeNotifier {
     Workmanager().registerPeriodicTask(
       SPENDING_SUMMARY_TASK, 
       SPENDING_SUMMARY_TASK, 
-      frequency: const Duration(seconds: 1), 
+      frequency: const Duration(days: 7), 
       initialDelay: const Duration(seconds: 10),
       constraints: Constraints(
         networkType: NetworkType.connected,
         requiresBatteryNotLow: true,
       ),
+      existingWorkPolicy: ExistingWorkPolicy.update
     );
   } else {
     print("Cancelling periodic spending summary task via Workmanager.");
@@ -174,7 +175,6 @@ void dispose() {
     bool success = await _transactionService.updateTransaction(updatedTxn);
     if (success) {
       Fluttertoast.showToast(msg: "Transaction updated!");
-      // Data will be reloaded automatically by stream listeners
       if (updatedTxn.type == TransactionType.EXPENSE && _userNotificationPreferences.overBudgetAlerts) {
         _checkForOverBudget(updatedTxn.userId, updatedTxn.category, updatedTxn.amount);
       }
