@@ -69,8 +69,7 @@ class TransactionViewModel extends ChangeNotifier {
     Workmanager().registerPeriodicTask(
       SPENDING_SUMMARY_TASK, 
       SPENDING_SUMMARY_TASK, 
-      frequency: const Duration(days: 7), 
-      initialDelay: const Duration(seconds: 10),
+      frequency: const Duration(days: 7),
       constraints: Constraints(
         networkType: NetworkType.connected,
         requiresBatteryNotLow: true,

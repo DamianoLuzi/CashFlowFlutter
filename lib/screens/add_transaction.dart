@@ -64,9 +64,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     setState(() {
       _isSubmitting = false;
     });
-/*     if (mounted) {
-      Navigator.pop(context); 
-    } */
   }
 
   @override
@@ -75,13 +72,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final allCategories = categoryViewModel.getAllCategoriesForDisplay();
 
     return Scaffold(
-      /* appBar: AppBar(
-        title: const Text("Add Transaction"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ), */
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
